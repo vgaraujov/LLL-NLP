@@ -6,7 +6,6 @@ import os
 import random
 import torch
 
-
 from settings import label_offsets
 
 
@@ -99,5 +98,3 @@ class DynamicBatchSampler(Sampler):
 
     def __len__(self):
         raise NotImplementedError
-
-

@@ -103,7 +103,7 @@ def train_task(args, model, memory, train_dataset):
             update_parameters(loss)
 
 
-    logger.info("Finsih training, avg loss: {:.3f}".format(tot_epoch_loss/tot_n_inputs))
+    logger.info("Finish training, avg loss: {:.3f}".format(tot_epoch_loss/tot_n_inputs))
     del optimizer, optimizer_grouped_parameters
     assert tot_n_inputs == len(train_dataset)
 

@@ -1,6 +1,4 @@
-from transformers.data.processors.squad import SquadResult, SquadV1Processor
-# from transformers import squad_convert_examples_to_features
-from squad import squad_convert_examples_to_features
+from squad import squad_convert_examples_to_features, SquadV1Processor, SquadV2Processor
 from torch.utils.data import Subset
 import numpy as np
 import os
@@ -12,8 +10,6 @@ logger = logging.getLogger(__name__)
 
 
 def pad_to_max_len(input_ids, masks=None):
-#     input_ids = [input_id[:128] for input_id in input_ids]
-#     max_len = max(len(input_id) for input_id in input_ids)
     max_len = 384
     masks = torch.tensor([[1]*len(input_id)+[0]*(max_len-len(input_id)) for input_id in input_ids], dtype=torch.long)
     input_ids = torch.tensor([input_id+[0]*(max_len-len(input_id)) for input_id in input_ids], dtype=torch.long)
@@ -22,22 +18,42 @@ def pad_to_max_len(input_ids, masks=None):
 
 def load_and_cache_examples(args, tokenizer, path, evaluate=False, output_examples=False):
     
-    if 'quac' in path.lower():
+    if 'quac' in path.lower() and not args.version_2_with_negative:
         identifier = 'quac'
         train_file = os.path.join(path, "train_v0.2.json")
         predict_file = os.path.join(path, "val_v0.2.json")
-    if 'squad' in path.lower():
+    if 'squad' in path.lower() and not args.version_2_with_negative:
         identifier = 'squad'
         train_file = os.path.join(path, "train-v1.1.json")
         predict_file = os.path.join(path, "dev-v1.1.json")
-    if 'web' in path.lower():
+    if 'web' in path.lower() and not args.version_2_with_negative:
         identifier = 'web'
         train_file = os.path.join(path, "squad-web-train.json")
         predict_file = os.path.join(path, "squad-web-dev.json")
-    if 'wiki' in path.lower():
+    if 'wiki' in path.lower() and not args.version_2_with_negative:
         identifier = 'wiki'
         train_file = os.path.join(path, "squad-wikipedia-train.json")
         predict_file = os.path.join(path, "squad-wikipedia-dev.json")
+    if 'quac' in path.lower() and args.version_2_with_negative:
+        identifier = 'quac2'
+        train_file = os.path.join(path, "quac_train_v2.0.json")
+        predict_file = os.path.join(path, "quac_dev_v2.0.json")
+    if 'squad' in path.lower() and args.version_2_with_negative:
+        identifier = 'squad2'
+        train_file = os.path.join(path, "train-v2.0.json")
+        predict_file = os.path.join(path, "dev-v2.0.json")
+    if 'triviaqa' in path.lower() and args.version_2_with_negative:
+        identifier = 'triviaqa2'
+        train_file = os.path.join(path, "triviaqa_train_v2.0.json")
+        predict_file = os.path.join(path, "triviaqa_dev_v2.0.json")
+    if 'nq' in path.lower() and args.version_2_with_negative:
+        identifier = 'nq2'
+        train_file = os.path.join(path, "nq_train_v2.0.json")
+        predict_file = os.path.join(path, "nq_dev_v2.0.json")
+    if 'newsqa' in path.lower() and args.version_2_with_negative:
+        identifier = 'newsqa2'
+        train_file = os.path.join(path, "newsqa_train_v2.0.json")
+        predict_file = os.path.join(path, "newsqa_dev_v2.0.json")
 
     # Load data features from cache or dataset file
     input_dir = args.data_dir if args.data_dir else "."
@@ -63,7 +79,7 @@ def load_and_cache_examples(args, tokenizer, path, evaluate=False, output_exampl
     else:
         logger.info("Creating features from dataset file at %s", input_dir)
 
-        processor = SquadV1Processor()
+        processor = SquadV2Processor() if args.version_2_with_negative else SquadV1Processor()
         if evaluate:
             examples = processor.get_dev_examples(args.data_dir, filename=predict_file)
         else:

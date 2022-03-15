@@ -1,5 +1,5 @@
 from transformers import AdamW, get_linear_schedule_with_warmup
-from transformers.data.processors.squad import SquadResult, SquadV1Processor
+from transformers.data.processors.squad import SquadResult
 from transformers.data.metrics.squad_metrics import (
     compute_predictions_log_probs,
     compute_predictions_logits,
@@ -52,8 +52,6 @@ def local_adapt(inputs, feature_indices, features, tmp_model, q_inputs, args, or
 
             start_logits, end_logits = output
             result = SquadResult(unique_id, start_logits, end_logits)
-
-#             all_results.append(result)
         
         torch.cuda.empty_cache()
         return loss, result
@@ -81,7 +79,7 @@ def test_task(task_id, task, args, model, tokenizer):
         q_token_type_ids = pickle.load(open(os.path.join(args.output_dir, 'q_token_type_ids-{}'.format(task_id)), 'rb'))
         q_labelss = pickle.load(open(os.path.join(args.output_dir, 'q_labelss-{}'.format(task_id)), 'rb'))
         q_labelse = pickle.load(open(os.path.join(args.output_dir, 'q_labelse-{}'.format(task_id)), 'rb'))
-    
+
         for i in range(len(dataset)):
             example = dataset[i]
             inputs = {
@@ -143,13 +141,17 @@ def test_task(task_id, task, args, model, tokenizer):
                 logging.info("Tested {}/{} examples , test loss: {:.3f}".format(
                     tot_n_inputs, len(dataset), cur_loss/tot_n_inputs))
         assert tot_n_inputs == len(dataset)
-                             
+
     # Compute predictions
     output_prediction_file = os.path.join(args.output_dir, "predictions_{}_N{}.json".format(task_id, args.adapt_steps))
     output_nbest_file = os.path.join(args.output_dir, "nbest_predictions_{}_N{}.json".format(task_id, args.adapt_steps))
-    output_null_log_odds_file = None
 
-    # Hardcode some mandatory parameters first
+    if args.version_2_with_negative:
+        output_null_log_odds_file = os.path.join(args.output_dir, "null_odds_{}_N{}.json".format(task_id, args.adapt_steps))
+    else:
+        output_null_log_odds_file = None
+
+    # Hardcode some mandatory hyperparameters
     args.verbose_logging = False
     args.null_score_diff_threshold = 0.0
     args.n_best_size = 20
@@ -165,7 +167,7 @@ def test_task(task_id, task, args, model, tokenizer):
         output_nbest_file,
         output_null_log_odds_file,
         args.verbose_logging,
-        False,
+        args.version_2_with_negative,
         args.null_score_diff_threshold,
         tokenizer,
     )

@@ -33,7 +33,7 @@ def parse_train_args():
 
     parser.add_argument("--adam_epsilon", type=float, default=1e-8)
     parser.add_argument("--batch_size", type=int, default=8)
-    parser.add_argument("--learning_rate", type=float, default=3e-5)
+    parser.add_argument("--learning_rate", type=float, default=5e-5)
     parser.add_argument("--logging_steps", type=int, default=500)
     parser.add_argument("--max_grad_norm", type=float, default=1.0)
     parser.add_argument("--model_name", type=str, default="bert-base-uncased")
@@ -51,7 +51,6 @@ def parse_train_args():
     parser.add_argument("--weight_decay", type=float, default=0)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--mem_capacity", type=float, default=1)
-
     parser.add_argument(
         "--max_seq_length",
         default=384,
@@ -85,6 +84,11 @@ def parse_train_args():
         type=bool,
         help="Set this flag if you are using an uncased model."
     )
+    parser.add_argument(
+        "--version_2_with_negative",
+        action="store_true",
+        help="If true, the SQuAD examples contain some that do not have an answer.",
+    )
 
     args = parser.parse_args()
 
@@ -96,10 +100,6 @@ def parse_train_args():
 
     set_device_id(args)
     set_seed(args)
-
-    memory_size = torch.cuda.get_device_properties(args.device_id).total_memory / 1e6
-    if args.batch_size <= 0:
-        args.batch_size = int(memory_size * 0.38)
 
     if os.path.exists(args.output_dir):
         if args.overwrite:
@@ -133,9 +133,9 @@ def parse_test_args():
 class TimeFilter(logging.Filter):
     def filter(self, record):
         try:
-          last = self.last
+            last = self.last
         except AttributeError:
-          last = record.relativeCreated
+            last = record.relativeCreated
 
         delta = record.relativeCreated/1000 - last/1000
         record.relative = "{:.3f}".format(delta)
@@ -152,4 +152,3 @@ def init_logging(filename):
     root_logger.addHandler(console_handler)
     for handler in root_logger.handlers:
         handler.addFilter(TimeFilter())
-

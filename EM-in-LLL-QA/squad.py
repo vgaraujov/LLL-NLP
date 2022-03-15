@@ -651,7 +651,8 @@ class SquadProcessor(DataProcessor):
         is_training = set_type == "train"
         examples = []
         for entry in tqdm(input_data):
-            title = entry["title"]
+            title = None
+#             title = entry["title"]
             for paragraph in entry["paragraphs"]:
                 context_text = paragraph["context"]
                 for qa in paragraph["qas"]:
