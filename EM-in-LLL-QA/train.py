@@ -110,6 +110,7 @@ def train_task(args, model, memory, train_dataset):
 
 def main():
     args = parse_train_args()
+    args.data_dir = "cached_data" # folder for cached data
     pickle.dump(args, open(os.path.join(args.output_dir, 'train_args'), 'wb'))
     init_logging(os.path.join(args.output_dir, 'log_train.txt'))
     logger.info("args: " + str(args))
@@ -125,7 +126,6 @@ def main():
 
     for task_id, task in enumerate(args.tasks):
         logger.info("Start parsing {} train data...".format(task))
-        args.data_dir = None
         train_dataset = load_and_cache_examples(args, tokenizer, task, evaluate=False, output_examples=False)
 
         logger.info("Start training {}...".format(task))
@@ -140,7 +140,6 @@ def main():
 
     for task_id, task in enumerate(args.tasks):
         logger.info("Start parsing {} test data...".format(task))
-        args.data_dir = None
         test_dataset, _, _ = load_and_cache_examples(args, tokenizer, task, evaluate=True, output_examples=True)
         logger.info("Start querying {}...".format(task))
         query_neighbors(task_id, args, memory, test_dataset)

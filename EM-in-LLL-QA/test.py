@@ -59,7 +59,6 @@ def local_adapt(inputs, feature_indices, features, tmp_model, q_inputs, args, or
 
 def test_task(task_id, task, args, model, tokenizer):
 
-    args.data_dir = None
     dataset, examples, features = load_and_cache_examples(args, tokenizer, task, evaluate=True, output_examples=True)
     
     if not args.no_fp16_test:

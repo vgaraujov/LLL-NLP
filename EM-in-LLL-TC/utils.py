@@ -72,29 +72,3 @@ class TextClassificationDataset(Dataset):
     def map_csv(self, row):
         context = '[CLS]' + ' '.join(row[1:])[:self.max_len-2] + '[SEP]'
         return (int(row[0]) + self.label_offset, self.tokenizer.encode(context))
-
-
-class DynamicBatchSampler(Sampler):
-    def __init__(self, dataset, batch_size):
-        self.dataset = dataset
-        self.batch_size = batch_size
-        self.n_samples = len(dataset)
-
-    def __iter__(self):
-        max_len = 0
-        batch = []
-        indices = np.arange(self.n_samples, dtype=np.int32)
-        if self.split == 'train':
-            np.random.shuffle(indices)
-        for idx in indices:
-            if max(max_len, len(self.dataset[idx][1]))**1.17 * (len(batch) + 1) > self.batch_size:
-                yield batch
-                max_len = 0
-                batch = []
-            max_len = max(max_len, len(self.dataset[idx][1]))
-            batch.append(idx)
-        if len(batch) > 0:
-            yield batch
-
-    def __len__(self):
-        raise NotImplementedError

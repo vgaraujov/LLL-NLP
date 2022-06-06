@@ -34,32 +34,14 @@ def load_and_cache_examples(args, tokenizer, path, evaluate=False, output_exampl
         identifier = 'wiki'
         train_file = os.path.join(path, "squad-wikipedia-train.json")
         predict_file = os.path.join(path, "squad-wikipedia-dev.json")
-    if 'quac' in path.lower() and args.version_2_with_negative:
-        identifier = 'quac2'
-        train_file = os.path.join(path, "quac_train_v2.0.json")
-        predict_file = os.path.join(path, "quac_dev_v2.0.json")
-    if 'squad' in path.lower() and args.version_2_with_negative:
-        identifier = 'squad2'
-        train_file = os.path.join(path, "train-v2.0.json")
-        predict_file = os.path.join(path, "dev-v2.0.json")
-    if 'triviaqa' in path.lower() and args.version_2_with_negative:
-        identifier = 'triviaqa2'
-        train_file = os.path.join(path, "triviaqa_train_v2.0.json")
-        predict_file = os.path.join(path, "triviaqa_dev_v2.0.json")
-    if 'nq' in path.lower() and args.version_2_with_negative:
-        identifier = 'nq2'
-        train_file = os.path.join(path, "nq_train_v2.0.json")
-        predict_file = os.path.join(path, "nq_dev_v2.0.json")
-    if 'newsqa' in path.lower() and args.version_2_with_negative:
-        identifier = 'newsqa2'
-        train_file = os.path.join(path, "newsqa_train_v2.0.json")
-        predict_file = os.path.join(path, "newsqa_dev_v2.0.json")
 
     # Load data features from cache or dataset file
     input_dir = args.data_dir if args.data_dir else "."
+    if not os.path.exists(input_dir):
+        os.makedirs(input_dir)
     cached_features_file = os.path.join(
         input_dir,
-        "cached_{}_{}_{}_{}_full".format(
+        "cached_{}_{}_{}_{}".format(
             "dev" if evaluate else "train",
             list(filter(None, args.model_name.split("/"))).pop(),
             str(args.max_seq_length),

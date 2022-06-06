@@ -10,7 +10,7 @@ logging.getLogger("transformers").setLevel(logging.WARNING)
 
 from memory import Memory
 from settings import parse_train_args, model_classes, init_logging
-from utils import TextClassificationDataset, DynamicBatchSampler
+from utils import TextClassificationDataset
 from utils import dynamic_collate_fn, prepare_inputs
 
 

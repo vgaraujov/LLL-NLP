@@ -33,7 +33,7 @@ def parse_train_args():
 
     parser.add_argument("--adam_epsilon", type=float, default=1e-8)
     parser.add_argument("--batch_size", type=int, default=8)
-    parser.add_argument("--learning_rate", type=float, default=5e-5)
+    parser.add_argument("--learning_rate", type=float, default=3e-5)
     parser.add_argument("--logging_steps", type=int, default=500)
     parser.add_argument("--max_grad_norm", type=float, default=1.0)
     parser.add_argument("--model_name", type=str, default="bert-base-uncased")
@@ -46,7 +46,7 @@ def parse_train_args():
     parser.add_argument("--overwrite", action="store_true")
     parser.add_argument("--replay_interval", type=int, default=100)
     parser.add_argument("--reproduce", action="store_true")
-    parser.add_argument("--tasks", nargs='+', default=["ag_news_csv"])
+    parser.add_argument("--tasks", nargs='+', default=["QuAC"])
     parser.add_argument("--warmup_steps", type=int, default=0)
     parser.add_argument("--weight_decay", type=float, default=0)
     parser.add_argument("--seed", type=int, default=42)
@@ -121,7 +121,7 @@ def parse_test_args():
 
     parser.add_argument("--adapt_lambda", type=float, default=1e-3)
     parser.add_argument("--adapt_lr", type=float, default=5e-3)
-    parser.add_argument("--adapt_steps", type=int, default=30)
+    parser.add_argument("--adapt_steps", type=int, default=15)
     parser.add_argument("--no_fp16_test", action="store_true")
     parser.add_argument("--output_dir", type=str, default="output0")
 

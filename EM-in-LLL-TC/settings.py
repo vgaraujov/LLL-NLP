@@ -94,7 +94,7 @@ def parse_test_args():
 
     parser.add_argument("--adapt_lambda", type=float, default=1e-3)
     parser.add_argument("--adapt_lr", type=float, default=1e-3)
-    parser.add_argument("--adapt_steps", type=int, default=30)
+    parser.add_argument("--adapt_steps", type=int, default=15)
     parser.add_argument("--no_fp16_test", action="store_true")
     parser.add_argument("--output_dir", type=str, default="output0")
 

@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 logging.getLogger("transformers").setLevel(logging.WARNING)
 
 from settings import parse_test_args, model_classes, init_logging
-from utils import TextClassificationDataset, dynamic_collate_fn, prepare_inputs, DynamicBatchSampler
+from utils import TextClassificationDataset, dynamic_collate_fn, prepare_inputs
 
 
 def local_adapt(input_ids, labels, tmp_model, q_input_ids, q_masks, q_labels, args, org_params):
